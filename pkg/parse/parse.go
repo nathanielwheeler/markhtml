@@ -2,7 +2,6 @@ package parse
 
 import (
 	"bytes"
-	"fmt"
 	"io/ioutil"
 
 	"github.com/yuin/goldmark"
@@ -58,8 +57,8 @@ func MarkdownToHTMLWithYAML(f string, opts ...parser.ParseOption) (*bytes.Buffer
 		return nil, nil, err
 	}
 
-  // FIXME parses an empty map
-  yaml := meta.Get(ctx)
+	// FIXME parses an empty map
+	yaml := meta.Get(ctx)
 
 	return &buf, &yaml, nil
 }

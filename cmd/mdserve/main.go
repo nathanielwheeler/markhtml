@@ -1,13 +1,17 @@
 package main
 
 import (
+	"bytes"
 	"errors"
 	"fmt"
+	"html/template"
+	"log"
+	"net/http"
 	"os"
 	"path/filepath"
 
+	"markhtml/pkg/handle"
 	"markhtml/pkg/parse"
-	// "markhtml/pkg/serve"
 )
 
 func main() {
@@ -17,6 +21,7 @@ func main() {
 	}
 }
 
+// TODO refactor
 func run() error {
 	// flags
 	parseYAML := false
@@ -47,21 +52,29 @@ func run() error {
 		return errors.New("invalid file type")
 	}
 
+	var buf *bytes.Buffer
 	if !parseYAML {
-		b, err := parse.MarkdownToHTML(f.Name())
+		buf, err = parse.MarkdownToHTML(f.Name())
 		if err != nil {
 			return err
 		}
-		fmt.Println(b)
+
 	} else {
-    // FIXME returns empty map for y
-		b, y, err := parse.MarkdownToHTMLWithYAML(f.Name())
+		// FIXME returns empty map for y
+		buf, y, err := parse.MarkdownToHTMLWithYAML(f.Name())
 		if err != nil {
 			return err
-    }
-		fmt.Println(b)
-    fmt.Println(y)
-	}
+		}
+		fmt.Println(buf)
+		fmt.Println(y)
+  }
+  
+  html := template.HTML(buf.String())
+
+	h := handle.Handler{HTML: &html}
+	port := 1729
+	fmt.Printf("Listening on port: %d\n", port)
+	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", port), &h))
 
 	return nil
 }
