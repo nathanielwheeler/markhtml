@@ -2,6 +2,7 @@ package parse
 
 import (
 	"bytes"
+	"fmt"
 	"io/ioutil"
 
 	"github.com/yuin/goldmark"
@@ -45,19 +46,20 @@ func MarkdownToHTMLWithYAML(f string, opts ...parser.ParseOption) (*bytes.Buffer
 	md = goldmark.New(
 		goldmark.WithExtensions(
 			meta.Meta,
-    ),
-  )
+		),
+	)
 
-  // Prepend parser context to parser options
-  ctx := parser.NewContext()
-	opts = append([]parser.ParseOption{parser.WithContext(ctx)}, opts...)
+	// Prepend parser context to parser options
+	ctx := parser.NewContext()
+	opts = append(opts, parser.WithContext(ctx))
 
-	err = md.Convert(src, &buf, opts...)
+	err = md.Convert([]byte(src), &buf, opts...)
 	if err != nil {
 		return nil, nil, err
 	}
 
-	yaml := meta.Get(ctx)
+  // FIXME parses an empty map
+  yaml := meta.Get(ctx)
 
 	return &buf, &yaml, nil
 }

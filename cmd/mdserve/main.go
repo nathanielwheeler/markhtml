@@ -18,11 +18,23 @@ func main() {
 }
 
 func run() error {
-  // TODO add flag option for YAML
+	// flags
+	parseYAML := false
 
-	// get file from args
+	// check if enough arguments
 	if len(os.Args) < 2 {
 		return errors.New("not enough arguments")
+	}
+
+	// check for flags
+	if len(os.Args) >= 3 {
+		for _, v := range os.Args[1:] {
+			switch v {
+			case "-y":
+			case "--yaml":
+				parseYAML = true
+			}
+		}
 	}
 
 	// try to open file and check if filetype is markdown
@@ -35,9 +47,21 @@ func run() error {
 		return errors.New("invalid file type")
 	}
 
-  b, err := parse.MarkdownToHTML(f.Name())
-  
-  fmt.Println(b)
+	if !parseYAML {
+		b, err := parse.MarkdownToHTML(f.Name())
+		if err != nil {
+			return err
+		}
+		fmt.Println(b)
+	} else {
+    // FIXME returns empty map for y
+		b, y, err := parse.MarkdownToHTMLWithYAML(f.Name())
+		if err != nil {
+			return err
+    }
+		fmt.Println(b)
+    fmt.Println(y)
+	}
 
 	return nil
 }
