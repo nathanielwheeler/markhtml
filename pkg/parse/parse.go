@@ -12,7 +12,7 @@ import (
 
 // MarkdownToHTML takes a file, parses it, and returns HTML bytes.  It can also take any number of  parse options to pass into goldmark's Convert function.
 // TODO return string instead of buffer
-func MarkdownToHTML(f string, opts ...parser.ParseOption) (*bytes.Buffer, error) {
+func MarkdownToHTML(f string, opts ...parser.ParseOption) (*template.HTML, error) {
 	var (
 		buf bytes.Buffer
 		err error
@@ -28,11 +28,12 @@ func MarkdownToHTML(f string, opts ...parser.ParseOption) (*bytes.Buffer, error)
 		return nil, err
 	}
 
-	return &buf, nil
+  html := template.HTML(buf.String())
+	return &html, nil
 }
 
 // MarkdownToHTMLWithYAML is like MarkdownToHTML, except that it also parses for a YAML header in the markdown file.
-func MarkdownToHTMLWithYAML(f string, opts ...parser.ParseOption) (*template.HTML, *map[string]interface{}, error) {
+func MarkdownToHTMLWithYAML(f string, opts ...parser.ParseOption) (*template.HTML, map[string]interface{}, error) {
 	var (
 		buf bytes.Buffer
 		md  goldmark.Markdown
@@ -63,5 +64,5 @@ func MarkdownToHTMLWithYAML(f string, opts ...parser.ParseOption) (*template.HTM
 	yaml := meta.Get(ctx)
 	html := template.HTML(buf.String())
 
-	return &html, &yaml, nil
+	return &html, yaml, nil
 }
