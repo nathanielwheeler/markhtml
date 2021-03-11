@@ -10,8 +10,8 @@ import (
 	"os"
 	"path/filepath"
 
-	"markhtml/pkg/handle"
-	"markhtml/pkg/parse"
+	"github.com/nathanielwheeler/markhtml/pkg/handle"
+	"github.com/nathanielwheeler/markhtml/pkg/parse"
 )
 
 func main() {
@@ -67,9 +67,9 @@ func run() error {
 		}
 		fmt.Println(buf)
 		fmt.Println(y)
-  }
-  
-  html := template.HTML(buf.String())
+	}
+
+	html := template.HTML(buf.String())
 
 	h := handle.Handler{HTML: &html}
 	port := 1729
