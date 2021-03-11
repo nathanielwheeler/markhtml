@@ -10,6 +10,7 @@ import (
 )
 
 // MarkdownToHTML takes a file, parses it, and returns HTML bytes.  It can also take any number of  parse options to pass into goldmark's Convert function.
+// TODO return string instead of buffer
 func MarkdownToHTML(f string, opts ...parser.ParseOption) (*bytes.Buffer, error) {
 	var (
 		buf bytes.Buffer
@@ -30,7 +31,7 @@ func MarkdownToHTML(f string, opts ...parser.ParseOption) (*bytes.Buffer, error)
 }
 
 // MarkdownToHTMLWithYAML is like MarkdownToHTML, except that it also parses for a YAML header in the markdown file.
-func MarkdownToHTMLWithYAML(f string, opts ...parser.ParseOption) (*string, *map[string]interface{}, error) {
+func MarkdownToHTMLWithYAML(f string, opts ...parser.ParseOption) (string, *map[string]interface{}, error) {
 	var (
 		buf bytes.Buffer
 		md  goldmark.Markdown
@@ -39,7 +40,7 @@ func MarkdownToHTMLWithYAML(f string, opts ...parser.ParseOption) (*string, *map
 
 	src, err := ioutil.ReadFile(f)
 	if err != nil {
-		return nil, nil, err
+		return "", nil, err
 	}
 
 	md = goldmark.New(
@@ -54,12 +55,12 @@ func MarkdownToHTMLWithYAML(f string, opts ...parser.ParseOption) (*string, *map
 
 	err = md.Convert([]byte(src), &buf, opts...)
 	if err != nil {
-		return nil, nil, err
+		return "", nil, err
 	}
 
 	// FIXME parses an empty map
 	yaml := meta.Get(ctx)
 	html := buf.String()
 
-	return &html, &yaml, nil
+	return html, &yaml, nil
 }
