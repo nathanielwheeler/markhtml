@@ -2,6 +2,7 @@ package parse
 
 import (
 	"bytes"
+	"html/template"
 	"io/ioutil"
 
 	"github.com/yuin/goldmark"
@@ -31,7 +32,7 @@ func MarkdownToHTML(f string, opts ...parser.ParseOption) (*bytes.Buffer, error)
 }
 
 // MarkdownToHTMLWithYAML is like MarkdownToHTML, except that it also parses for a YAML header in the markdown file.
-func MarkdownToHTMLWithYAML(f string, opts ...parser.ParseOption) (string, *map[string]interface{}, error) {
+func MarkdownToHTMLWithYAML(f string, opts ...parser.ParseOption) (*template.HTML, *map[string]interface{}, error) {
 	var (
 		buf bytes.Buffer
 		md  goldmark.Markdown
@@ -40,7 +41,7 @@ func MarkdownToHTMLWithYAML(f string, opts ...parser.ParseOption) (string, *map[
 
 	src, err := ioutil.ReadFile(f)
 	if err != nil {
-		return "", nil, err
+		return nil, nil, err
 	}
 
 	md = goldmark.New(
@@ -55,12 +56,12 @@ func MarkdownToHTMLWithYAML(f string, opts ...parser.ParseOption) (string, *map[
 
 	err = md.Convert([]byte(src), &buf, opts...)
 	if err != nil {
-		return "", nil, err
+		return nil, nil, err
 	}
 
 	// FIXME parses an empty map
 	yaml := meta.Get(ctx)
-	html := buf.String()
+	html := template.HTML(buf.String())
 
-	return html, &yaml, nil
+	return &html, &yaml, nil
 }
