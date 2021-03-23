@@ -32,7 +32,7 @@ func MarkdownToHTML(f string, opts ...parser.ParseOption) (*bytes.Buffer, error)
 }
 
 // MarkdownToHTMLWithExt is like MarkdownToHTML, except that it also parses for a YAML header in the markdown file, as well as MathJax.
-func MarkdownToHTMLWithExt(f string, opts ...parser.ParseOption) (*string, *map[string]interface{}, error) {
+func MarkdownToHTMLWithExt(f string, opts ...parser.ParseOption) (string, map[string]interface{}, error) {
 	var (
 		buf bytes.Buffer
 		md  goldmark.Markdown
@@ -41,7 +41,7 @@ func MarkdownToHTMLWithExt(f string, opts ...parser.ParseOption) (*string, *map[
 
 	src, err := ioutil.ReadFile(f)
 	if err != nil {
-		return nil, nil, err
+		return "", nil, err
 	}
 
   // Prepend parser context to parser options
@@ -65,12 +65,12 @@ func MarkdownToHTMLWithExt(f string, opts ...parser.ParseOption) (*string, *map[
 
 	err = md.Convert([]byte(src), &buf, opts...)
 	if err != nil {
-		return nil, nil, err
+		return "", nil, err
 	}
 
 	// FIXME parses an empty map
 	yaml := meta.Get(ctx)
 	html := buf.String()
 
-	return &html, &yaml, nil
+	return html, yaml, nil
 }
