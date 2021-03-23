@@ -61,7 +61,7 @@ func run() error {
 
 	} else {
 		// FIXME returns empty map for y
-		buf, y, err := parse.MarkdownToHTMLWithYAML(f.Name())
+		buf, y, err := parse.MarkdownToHTMLWithExt(f.Name())
 		if err != nil {
 			return err
 		}
